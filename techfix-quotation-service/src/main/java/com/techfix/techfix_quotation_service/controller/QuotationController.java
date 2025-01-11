@@ -3,6 +3,8 @@ import com.techfix.techfix_quotation_service.model.Quotation;
 import com.techfix.techfix_quotation_service.service.QuotationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,6 +37,7 @@ public class QuotationController {
     @GetMapping
     public ResponseEntity<List<Quotation>> getAllQuotations() {
         List<Quotation> quotations = quotationService.getAllQuotations();
+
         return ResponseEntity.ok(quotations);
     }
 }
