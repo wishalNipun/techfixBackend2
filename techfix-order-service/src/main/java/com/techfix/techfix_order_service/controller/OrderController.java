@@ -1,49 +1,63 @@
 package com.techfix.techfix_order_service.controller;
 
-import com.techfix.techfix_order_service.model.Order;
-import com.techfix.techfix_order_service.service.OrderService;
+import com.techfix.techfix_order_service.model.OrderEntity;
+import com.techfix.techfix_order_service.service.OrderProcessingService;
+import org.hibernate.criterion.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-    private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    private final OrderProcessingService orderService;
+
+    public OrderController(OrderProcessingService orderService) {
         this.orderService = orderService;
     }
 
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
-        Order placedOrder = orderService.placeOrder(order);
+    public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
+        OrderEntity placedOrder = orderService.placeOrder(order);
         return ResponseEntity.ok(placedOrder);
     }
 
     @GetMapping("/supplier/{supplierName}")
-    public ResponseEntity<List<Order>> getOrdersBySupplier(@PathVariable String supplierName) {
-        List<Order> orders = orderService.getOrdersBySupplier(supplierName);
+    public ResponseEntity<List<OrderEntity>> getOrdersBySupplier(@PathVariable String supplierName) {
+        List<OrderEntity> orders = orderService.findOrdersBySupplier(supplierName);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/component/{componentName}")
-    public ResponseEntity<List<Order>> getOrdersByComponent(@PathVariable String componentName) {
-        List<Order> orders = orderService.getOrdersByComponent(componentName);
+    public ResponseEntity<List<OrderEntity>> getOrdersByComponent(@PathVariable String componentName) {
+        List<OrderEntity> orders = orderService.findOrdersByComponent(componentName);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
+    public ResponseEntity<List<OrderEntity>> getAllOrders() {
+        List<OrderEntity> orders = orderService.findAllOrders();
         return ResponseEntity.ok(orders);
     }
 
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @RequestParam String status) {
-        Order updatedOrder = orderService.updateOrderStatus(orderId, status);
-        return ResponseEntity.ok(updatedOrder);
+    public ResponseEntity<OrderEntity> changeOrderStatus(@PathVariable Long orderId, @RequestParam String status) {
+        OrderEntity updated = orderService.updateOrderStatus(orderId, status);
+        return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderEntity> updateOrder(@PathVariable Long id, @RequestBody OrderEntity updatedOrder) {
+        OrderEntity result = orderService.updateOrder(id, updatedOrder);
+        return ResponseEntity.ok(result);
+    }
+
 }
